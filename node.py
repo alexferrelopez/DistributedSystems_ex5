@@ -1,3 +1,4 @@
+import hashlib
 import json
 import logging
 import threading
@@ -27,6 +28,10 @@ class NodeService(NodeServiceServicer):
         self._server_name = server_name
         self._setup_done = False
         self._layer_stubs = []
+        self._version = 0
+        self._last_hash = None
+        self._file_path = f"./logs/{self._server_name}.log"
+        self._file_lock = threading.Lock()
 
         if self._lower_layer_nodes:
             threading.Thread(target=self.update_lower_layer).start()
@@ -54,9 +59,26 @@ class NodeService(NodeServiceServicer):
             self._debug_log(f"Received data from {request.sender}: {request.data}")
             with self._data_lock:
                 self._data = json.loads(request.data)
+                self._log_data(request.data)
             return epidemic_replication_pb2.StatusResponse(status=0, status_message="Data updated successfully")
         except Exception as e:
             return epidemic_replication_pb2.StatusResponse(status=-1, status_message=self._server_name + ": " + str(e))
+
+    def update_lower_layer(self):
+        while True:
+            sleep(10)
+            with self._data_lock:
+                self._send_data_to_nodes(self._lower_layer_stubs)
+
+    def _log_data(self, data):
+        new_hash = str(int(hashlib.md5(json.dumps(self._data).encode("utf-8")).hexdigest(), 16))
+        # if the data has changed, write it to the log file, this layer 2 doesn't write the same data consecutively
+        if self._last_hash is None or self._last_hash != new_hash:
+            with self._file_lock:
+                with open(self._file_path, "a+") as f:
+                    f.write(f"{self._version}:\n{data}\n")
+            self._last_hash = new_hash
+            self._version += 1
 
     def _send_data_to_nodes(self, node_stubs: list):
         for stub in node_stubs:
@@ -64,12 +86,6 @@ class NodeService(NodeServiceServicer):
                 epidemic_replication_pb2.NodeDataUpdate(sender=self._server_name, data=json.dumps(self._data)))
             if response.status != 0:
                 logger.warning(response.status_message)
-
-    def update_lower_layer(self):
-        while True:
-            sleep(10)
-            with self._data_lock:
-                self._send_data_to_nodes(self._lower_layer_stubs)
 
     def connect_to_server(self, socket):
         try:
@@ -89,13 +105,13 @@ class NodeService(NodeServiceServicer):
 
         if self.is_not_read_only(begin, layer) or is_read_only:
             actions: list = split[1:-1]
-            answer = ""
+            answer = self._server_name + ", "
             for i, action in enumerate(actions):
                 a: str = action.strip()
 
                 if a.startswith("r"):
                     key = a.strip("r()")
-                    answer += self._data.get(key, "0") + ","
+                    answer += self._data.get(key, "0") + ", "
                 elif action.strip().startswith("w"):
                     if is_read_only:
                         raise ValueError("Invalid transaction")

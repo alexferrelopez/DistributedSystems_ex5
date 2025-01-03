@@ -27,7 +27,7 @@ replicas = {
     "A2": ([ADDRS["A1"], ADDRS["A3"]], [ADDRS["B1"]]),
     "A3": ([ADDRS["A1"], ADDRS["A2"]], [ADDRS["B2"]]),
     "B1": ([], []),
-    "B2": ([], [ADDRS["C1"]], ADDRS["C2"]),
+    "B2": ([], [ADDRS["C1"], ADDRS["C2"]]),
     "C1": ([], []),
     "C2": ([], []),
 }

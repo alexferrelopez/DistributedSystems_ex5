@@ -47,6 +47,10 @@ class NodeService(NodeServiceServicer):
             s = self.connect_to_server(node[1])
             self._lower_layer_stubs.append(s)
 
+    def nodeGetData(self, request, context):
+        with self._data_lock:
+            return epidemic_replication_pb2.NodeData(sender=self._server_name, data=json.dumps(self._data))
+
     def processTransaction(self, request, context):
         try:
             answer, _ = self._parse_client_transaction(request.transaction, self._layer)
@@ -83,7 +87,7 @@ class NodeService(NodeServiceServicer):
     def _send_data_to_nodes(self, node_stubs: list):
         for stub in node_stubs:
             response = stub.nodeUpdate(
-                epidemic_replication_pb2.NodeDataUpdate(sender=self._server_name, data=json.dumps(self._data)))
+                epidemic_replication_pb2.NodeData(sender=self._server_name, data=json.dumps(self._data)))
             if response.status != 0:
                 logger.warning(response.status_message)
 

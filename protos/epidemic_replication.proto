@@ -2,7 +2,8 @@ syntax = "proto3";
 
 service NodeService {
   rpc processTransaction (TransactionRequest) returns (TransactionResponse);
-  rpc nodeUpdate (NodeDataUpdate) returns (StatusResponse);
+  rpc nodeUpdate (NodeData) returns (StatusResponse);
+  rpc nodeGetData (Empty) returns (NodeData);
 }
 
 message TransactionRequest {
@@ -14,7 +15,7 @@ message TransactionResponse {
   string answer = 2;
 }
 
-message NodeDataUpdate {
+message NodeData {
   string sender = 1;
   string data = 2;
 }
@@ -23,3 +24,5 @@ message StatusResponse {
   int32 status = 1;
   string status_message = 2;
 }
+
+message Empty {}

@@ -1,9 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Monitor</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Node Monitor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes flash-green {
+            0% {
+                background-color: #d3fddf;
+            }
+            100% {
+                background-color: white;
+            }
+        }
+
+        @keyframes flash-blue {
+            0% {
+                background-color: #d0f9fa;
+            }
+            100% {
+                background-color: white;
+            }
+        }
+    </style>
 </head>
-<body>
+<body class="bg-gray-100 min-h-screen p-5">
+<div class="max-w-7xl mx-auto">
+    <h1 class="text-3xl font-bold text-center text-gray-800 mb-4">Node Monitor</h1>
+
+    <div id="node-grid" class="flex flex-col gap-2"></div>
+</div>
 <script src="../static/js/monitor.js"></script>
 </body>
 </html>

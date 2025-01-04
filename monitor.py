@@ -31,11 +31,17 @@ def get_stubs():
 
 
 async def send_node_data(websocket):
+    last_data_hash = {}
     try:
         while True:
             for stub in stubs.values():
                 response = stub.nodeGetData(epidemic_replication_pb2.Empty())
-                await websocket.send(f"{response.sender} :{response.data}")
+
+                new_hash = hash(response.data)
+
+                if last_data_hash.get(response.sender) != new_hash:
+                    last_data_hash[response.sender] = new_hash
+                    await websocket.send(f"{response.sender} :{response.data}")
             await asyncio.sleep(0.2)
     except Exception as e:
         logger.error(e)

@@ -2,10 +2,10 @@ import json
 import logging
 import threading
 
-import epidemic_replication_pb2
-from addrs import Layer
-from node import NodeService
-from utils import logging_level
+from services.addrs import Layer
+from services.node import NodeService
+from . import epidemic_replication_pb2
+from . import logging_level
 
 logging.basicConfig(level=logging_level, format="%(message)s")
 logger = logging.getLogger(__name__)

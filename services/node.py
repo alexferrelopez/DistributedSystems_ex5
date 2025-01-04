@@ -6,11 +6,10 @@ from time import sleep
 
 import grpc
 
-import epidemic_replication_pb2
-import epidemic_replication_pb2_grpc
-from addrs import Layer, replicas
-from epidemic_replication_pb2_grpc import NodeServiceServicer
-from utils import logging_level
+from . import epidemic_replication_pb2
+from . import logging_level, Layer, replicas
+from . import NodeServiceServicer
+from . import epidemic_replication_pb2_grpc
 
 logging.basicConfig(level=logging_level, format="%(message)s")
 logger = logging.getLogger(__name__)

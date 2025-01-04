@@ -4,11 +4,10 @@ from time import sleep
 
 import grpc
 
-
-import epidemic_replication_pb2
-import epidemic_replication_pb2_grpc
-from addrs import ADDRS, Layer
-from utils import logging_level
+from services import epidemic_replication_pb2
+from services import epidemic_replication_pb2_grpc
+from services import ADDRS, Layer
+from services import logging_level
 
 logging.basicConfig(level=logging_level, format="%(message)s")
 logger = logging.getLogger(__name__)

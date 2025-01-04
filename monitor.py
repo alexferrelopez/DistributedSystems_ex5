@@ -5,10 +5,10 @@ import sys
 import grpc
 from websockets.asyncio.server import serve
 
-import epidemic_replication_pb2
-import epidemic_replication_pb2_grpc
-from addrs import ADDRS
-from utils import logging_level
+from services.addrs import ADDRS
+from services.proto import epidemic_replication_pb2
+from services.proto import epidemic_replication_pb2_grpc
+from services.utils import logging_level
 
 logging.basicConfig(level=logging_level, format="%(message)s")
 logger = logging.getLogger(__name__)
@@ -37,8 +37,8 @@ async def send_node_data(websocket):
                 response = stub.nodeGetData(epidemic_replication_pb2.Empty())
                 await websocket.send(f"{response.sender} :{response.data}")
             await asyncio.sleep(0.2)
-    except asyncio.CancelledError:
-        print("WebSocket connection closed gracefully.")
+    except Exception as e:
+        logger.error(e)
 
 
 async def main():

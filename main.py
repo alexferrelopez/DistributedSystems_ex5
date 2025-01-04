@@ -4,11 +4,10 @@ from multiprocessing.context import Process
 
 import grpc
 
-import addrs
-import epidemic_replication_pb2_grpc
-from core_node import CoreNodeService
-from node import NodeService
-from utils import logging_level
+from services import addrs, logging_level
+from services.proto import epidemic_replication_pb2_grpc
+from services.core_node import CoreNodeService
+from services.node import NodeService
 
 logging.basicConfig(level=logging_level, format="%(message)s")
 logger = logging.getLogger(__name__)
